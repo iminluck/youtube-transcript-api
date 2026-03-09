@@ -8,13 +8,21 @@ def extract_video_id(url):
     match = re.search(r"(?:v=|youtu.be/)([a-zA-Z0-9_-]+)", url)
     return match.group(1)
 
+@app.get("/")
+def root():
+    return {"message": "API is running"}
+
 @app.get("/transcript")
 def get_transcript(url: str):
 
-    video_id = extract_video_id(url)
+    try:
+        video_id = extract_video_id(url)
 
-    transcript = YouTubeTranscriptApi.get_transcript(video_id)
+        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=['en'])
 
-    text = " ".join([t["text"] for t in transcript])
+        text = " ".join([t["text"] for t in transcript])
 
-    return {"transcript": text}
+        return {"transcript": text}
+
+    except Exception as e:
+        return {"error": str(e)}
