@@ -20,7 +20,10 @@ def get_transcript(url: str):
 
         transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
 
-        transcript = transcript_list.find_transcript(['en']).fetch()
+        try:
+            transcript = transcript_list.find_transcript(['en']).fetch()
+        except:
+            transcript = transcript_list.find_generated_transcript(['en']).fetch()
 
         text = " ".join([t['text'] for t in transcript])
 
