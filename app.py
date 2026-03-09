@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from youtube_transcript_api import YouTubeTranscriptApi
+import requests
 import re
 
 app = FastAPI()
@@ -10,7 +10,7 @@ def extract_video_id(url):
 
 @app.get("/")
 def root():
-    return {"message": "API is running"}
+    return {"message": "API running"}
 
 @app.get("/transcript")
 def get_transcript(url: str):
@@ -18,16 +18,11 @@ def get_transcript(url: str):
     try:
         video_id = extract_video_id(url)
 
-        transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+        transcript_url = f"https://video.google.com/timedtext?lang=en&v={video_id}"
 
-        try:
-            transcript = transcript_list.find_transcript(['en']).fetch()
-        except:
-            transcript = transcript_list.find_generated_transcript(['en']).fetch()
+        response = requests.get(transcript_url)
 
-        text = " ".join([t['text'] for t in transcript])
-
-        return {"transcript": text}
+        return {"transcript_xml": response.text}
 
     except Exception as e:
         return {"error": str(e)}
