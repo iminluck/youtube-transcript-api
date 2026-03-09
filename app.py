@@ -18,10 +18,9 @@ def get_transcript(url: str):
     try:
         video_id = extract_video_id(url)
 
-        api = YouTubeTranscriptApi()
-        transcript = api.fetch(video_id)
+        transcript = YouTubeTranscriptApi.get_transcript(video_id)
 
-        text = " ".join([item.text for item in transcript])
+        text = " ".join([t["text"] for t in transcript])
 
         return {"transcript": text}
 
